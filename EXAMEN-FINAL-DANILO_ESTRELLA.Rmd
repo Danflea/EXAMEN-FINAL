@@ -1,0 +1,187 @@
+---
+title: "Mensaje a la Nación de Alberto Fujimori 1996"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+    logo: logo-peru.png
+    theme: united
+    social: [ "twitter", "facebook", "menu"]
+---
+
+```{r setup, include=FALSE}
+library(pacman)
+p_load(flexdashboard, gganimate, dplyr, pdftools, stringr, readxl, tidyverse, tidytext, tm, wordcloud, wordcloud2, patchwork, widyr, magrittr, igraph, ggraph, grid, extrafont, RcolorBrewer, ggplot2, plotly, scales, gifski, remotes, crosstalk, DT, d3scatter, kableExtra, knitr)
+```  
+
+```{r echo=FALSE}
+discurso_af <- pdf_text("mensaje-1996-af.pdf")
+
+discurso_af <- paste(discurso_af, collapse = " ")
+
+discurso_af <-  str_remove_all(discurso_af, "MENSAJE A LA NACIÓN")
+discurso_af <-  str_remove_all(discurso_af, "PRESIDENTE DE LA REPÚBLICA")
+discurso_af <-  str_remove_all(discurso_af, "ALBERTO FUJIMORI")
+
+discurso_af <- str_remove_all(discurso_af, "\n[:blank:]+[:digit:]+\n")
+
+discurso_af <- str_remove_all(discurso_af, "[:digit:]") # removiendo los números
+
+write_lines(discurso_af, "DISCURSO PRESIDENCIAL FUJIMORI.txt")
+
+discurso_fujimori <- scan("DISCURSO PRESIDENCIAL FUJIMORI.txt",
+                    encoding = "UTF-8", what = "char", sep = "\n")
+
+discurso_fujimori <- tibble(discurso_fujimori) %>% 
+  unnest_tokens(Token, discurso_fujimori) %>% 
+  mutate(Token = removeNumbers(Token))
+
+```
+
+
+# BIOGRAFÍA {data-icon="file-tray-stacked-outline"}
+  
+## **Alberto Fujimori**
+
+###   
+
+(Alberto Kaynia Fujimori; Lima, 1938) Político peruano, presidente de Perú entre 1990 y 2000. Fundador de la agrupación Cambio 90, ganó las elecciones presidenciales de 1990, derrotando a Vargas Llosa, y puso en marcha un duro plan de ajuste para paliar la grave situación económica. El 5 de abril de 1992, con el apoyo del ejército, encabezó un autogolpe y disolvió el parlamento. Después de sofocar un intento de contragolpe protagonizado por varios militares (13 de noviembre), convocó unas elecciones (6 de diciembre de 1992) para un denominado Congreso Constituyente Democrático, que fueron boicoteadas por los partidos tradicionales de país.  
+La victoria en ellas de la agrupación Nueva Mayoría-Cambio 90 permitió a Fujimori legitimar su golpe de estado y elaborar una nueva constitución acorde con su política. En los comicios de 1995 resultó reelegido por mayoría absoluta; bajo su segundo mandato el país experimentó un crecimiento económico notable, aunque tuvo que afrontar episodios como el secuestro y la posterior liberación de rehenes en la embajada japonesa en Lima (diciembre 1996-abril 1997). En el año 2000 volvió a ser elegido, pero las denuncias de corrupción forzaron su dimisión en noviembre del mismo año.
+
+## 
+
+### 
+
+![Alberto Kaynia Fujimori](https://www.biografiasyvidas.com/biografia/f/fotos/fujimori.jpg)  
+
+# GRÁFICOS {data-icon="glyphicon-dashboard"}  
+
+```{r}
+stopwords_es_1 <- read_excel("CustomStopWords.xlsx")
+names(stopwords_es_1) <- c("Token", "Fuente")
+stopwords_es_2 <- tibble(Token = c(""), Fuente = "Mis Stopwords")
+stopwords_es <- rbind(stopwords_es_1, stopwords_es_2) # funcion de los stopwords
+stopwords_es <-  stopwords_es[!duplicated(stopwords_es$Token),] #eliminamos los stopwords duplicados
+
+discurso_fujimori %<>% anti_join(stopwords_es) #removiendo los stopwords 
+
+discurso_fujimori <- discurso_fujimori %>% filter(Token != "república")
+# discurso_fujimori <- discurso_fujimori %>% filter(Token != "mil")
+# discurso_fujimori <- discurso_fujimori %>% filter(Token != "millones")
+
+discurso_fujimori$Token <- str_replace(discurso_fujimori$Token, "países", "país")
+discurso_fujimori$Token <- str_replace(discurso_fujimori$Token, "peruanas", "peruanos")
+discurso_fujimori$Token <- str_replace(discurso_fujimori$Token, "perú", "país")
+```
+
+```{r frecuencias}
+discurso_fujimori_frecuencias <- discurso_fujimori %>% 
+  dplyr::count(Token, sort = TRUE)
+```
+
+
+##  
+
+### Tabla de frecuencias {data-width = "300"}  
+
+Observando los gráficos podemos ver que el discurso del expresidente Alberto Fujimori trata sobre el desarrollo del país, también habla del congreso y del diñero invertido. Modificando el aspecto, más ancho que alto, seguramente corrijas la mayoría de los problemas con los textos, aún así, tienes algunas leyendas, tal vez demasiado largas, puedes probar achicarlas, o bien agregarles saltos de linea ñp25555555555a cada texto.
+
+```{r kableExtra}
+discurso_fujimori_frecuencias %>% kable() %>% 
+  kable_styling(full_width = F) %>% 
+  column_spec(column = 1, background = "lightgreen") %>% 
+  column_spec(column = 2, background = "green")
+  
+```  
+
+
+## {.tabset}  
+
+### Gráfico animado
+
+```{r grafico animado}
+discurso_fujimori_frecuencias %>%
+  top_n(10, n) %>%
+  arrange(desc(n)) %>%
+  ggplot() + 
+  aes(x = reorder(Token, n), y = n, fill = Token, label = Token) +
+  geom_bar(stat = "identity", show.legend = FALSE) +  
+  geom_text(size = 4, position = position_stack(vjust = 0.5)) +  
+  labs(title = "Veces que se repite la palabra: {discurso_fujimori_frecuencias %>% filter(Token == closest_state) %>% pull(n)}",
+       x = "Palabras",
+       y = "Frecuencia") +  
+  coord_flip() +  
+  transition_states(Token, transition_length = 1, state_length = 1) +  
+  enter_fade() +  
+  exit_fade() -> grafico
+animate(grafico)
+
+```  
+
+### Nube de palabras
+
+```{r nube de palabras}
+discurso_fujimori_frecuencias %>% wordcloud2()
+```  
+
+# ANÁLISIS DE SENTIMIENTO {data-orientation="rows"}  
+
+```{r}
+sentimientos <- read.delim("sentimientos_2.txt")
+
+sentimientos <- as.tibble(sentimientos)
+
+sentimientos <- distinct(sentimientos)
+# sentimientos <- sentimientos[!duplicated(sentimientos), ]
+
+
+discurso_sentimientos <-  discurso_fujimori %>% 
+  inner_join(sentimientos, by = c("Token" = "palabra"))
+```  
+
+##  
+
+### value box {data-width = "300"}  
+
+```{r}
+# Convertir la columna sentimiento a numérica, si es posible
+max_sentimiento <- as.numeric(discurso_sentimientos$sentimiento)
+
+# Calcular el máximo de la columna sentimiento, ignorando los NAs
+max_sentimiento_2 <- max(discurso_sentimientos$sentimiento, na.rm = TRUE)
+
+# Crear el valueBox para mostrar el máximo sentimiento
+valueBox(value = max_sentimiento_2, 
+         icon = "fa-user-clock",
+         caption = "Sentimiento frecuente",
+         color = "orange")
+
+```  
+
+
+##  
+
+### Gráfico de barras de sentimiento 
+
+```{r, fig.width=15, fig.height=5}
+contar_palabras1 <- discurso_fujimori %>% 
+  inner_join(sentimientos,
+             by = c("Token" = "palabra")) %>%
+  dplyr::count(Token, sentimiento) %>% 
+  group_by(sentimiento) %>% 
+  top_n(5, n)
+
+
+ggplot(contar_palabras1) + 
+  aes(x = fct_reorder(Token, n),
+      y = n ,
+      fill = sentimiento) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap( ~ sentimiento, scales = "free_y", ncol = 5) +
+  labs(title = "Gráfico de palabras por sentimiento",
+       subtitle = "Discurso de Martín Fujimori (28 de julio de 1996)",
+       x = "Palabras", y = "Sentimiento") +
+  coord_flip()
+```  
+
