@@ -1,0 +1,87 @@
+---
+title: "Discurso presidencial de 1996"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: cerulean
+    social: ["facebook", "github", "menu"]
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```  
+
+# BIOGRAFIA {data-icon="fa-github"}
+
+column {data-width=400}
+---  
+### Alberto Fujimori  
+
+To include a value box within a Shiny flexdashboard you need to be sure to wrap the value box output in renderValueBox (so that it is updated when inputs it depends on change). For example:  
+
+column {data-width=600}  
+---  
+
+### Foto de Fujimori  
+
+  
+# GRÁFICOS {data-icon="ion-ios-star-half"}  
+
+Column {data-width=650 .tabset}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+```  
+
+### Chart X
+```{r}
+
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```  
+
+# Valuebox {data-orientation="rows" data-icon="ion-erlenmeyer-flask"}
+
+## {data-height=300}  
+
+### **VALUEBOX**  
+
+```{r}
+#valueBox(value = 17,
+#         caption = "personas",
+#        color = "orange")
+```  
+
+## {data-height=700}  
+
+### **GRAFICAS DE SENTIMIENTO**  
+
+```{r}
+
+```
+
+
+
+
+
+
+
+

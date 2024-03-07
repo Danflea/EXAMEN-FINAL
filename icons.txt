@@ -1,0 +1,19 @@
+data-icon="ion-social-bitcoin-outline" funciona 
+
+data-icon="ion-social-tux" funciona linux
+
+data-icon="fa-github" funciona
+
+data-icon="ion-social-apple" funciona
+
+data-icon="ion-easel" funciona tv
+
+data-icon="ion-erlenmeyer-flask" funciona matraz
+
+data-icon="ion-earth" funciona  tierra
+
+data-icon="" funciona
+
+data-icon="" funciona
+
+data-icon="" funciona
