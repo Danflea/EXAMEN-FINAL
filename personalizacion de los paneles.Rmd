@@ -19,6 +19,7 @@ output:
         google: 
           family: JetBrains Mono
           local: false
+runtime: shiny
 
 ---
 
@@ -60,6 +61,19 @@ Column {data-width=650 .tabset}
 
 ### Chart X
 ```{r}
+# Instalar y cargar las bibliotecas necesarias
+library(wordcloud)
+
+# Datos de ejemplo: palabras y sus frecuencias
+palabras <- c("manzana", "banana", "naranja", "pera", "uva")
+frecuencias <- c(20, 15, 25, 18, 22)
+
+# Crear un data frame con las palabras y sus frecuencias
+datos <- data.frame(word = palabras, freq = frecuencias)
+
+wordcloud(words = datos$word, freq = datos$freq, scale = c(4, 0.5), 
+          min.freq = 1, max.words = 100, random.order = TRUE, 
+          colors = brewer.pal(8, "Dark2"))
 
 ```
 
@@ -86,9 +100,9 @@ Column {data-width=350}
 ### **VALUEBOX**  
 
 ```{r}
-#valueBox(value = 17,
-#         caption = "personas",
-#        color = "orange")
+valueBox(value = 17,
+         caption = "personas",
+        color = "orange")
 ```  
 
 ## {data-height=700}  

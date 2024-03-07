@@ -134,9 +134,18 @@ animate(grafico)
 ### Nube de palabras
 
 ```{r nube de palabras}
-discurso_fujimori_frecuencias %>% top_n(30, n) %>% 
-  wordcloud2(shape = "circle") -> nube_circle
-nube_circle
+top_palabras <- discurso_fujimori_frecuencias %>%
+                 top_n(30, n)
+
+# Crear la nube de palabras en forma de círculo
+wordcloud(words = top_palabras$Token,      # Palabras
+          freq = top_palabras$n,            # Frecuencias
+          min.freq = 1,                     # Frecuencia mínima
+          max.words = 30,                   # Máximo de palabras a mostrar
+          random.order = FALSE,             # Orden aleatorio desactivado
+          colors = brewer.pal(8, "Accent"),  # Colores
+          )                 # Forma del contenedor
+
 ```  
 
 # ANÁLISIS DE SENTIMIENTO {data-orientation="rows" data-icon="ion-ios-star-half"}  
