@@ -1,18 +1,30 @@
 ---
-title: "Mensaje a la Nación del 1996"
+title: "Discurso presidencial del 1996"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
     source_code: embed
-    logo: logo-peru.png
-    theme: cerulean
-    social: [ "twitter", "facebook", "menu"]
+    logo: fujimori.jpg
+    social: ["github", "menu"]
+    theme:
+      version: 4
+      bg: "#E6F0FF"
+      fg: "#001F33" 
+      primary: "#4CAF50"
+      navbar-bg: "#6699CC"
+      base_font: 
+        google: Prompt
+      heading_font:
+        google: Sen
+      code_font:
+        google: 
+          family: JetBrains Mono
+          local: false
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
 library(pacman)
-p_load(flexdashboard, gganimate, dplyr, pdftools, stringr, readxl, tidyverse, tidytext, tm, wordcloud, wordcloud2, patchwork, widyr, magrittr, igraph, ggraph, grid, extrafont, RcolorBrewer, ggplot2, plotly, scales, gifski, remotes, crosstalk, DT, d3scatter, kableExtra, knitr)
+p_load(flexdashboard, gganimate, dplyr, pdftools, stringr, readxl, tidyverse, tidytext, tm, wordcloud, wordcloud2, patchwork, widyr, magrittr, igraph, ggraph, grid, extrafont, RcolorBrewer, ggplot2, plotly, scales, gifski, remotes, crosstalk, DT, d3scatter, kableExtra, knitr, rsconnect)
 ```  
 
 ```{r echo=FALSE}
@@ -85,10 +97,6 @@ discurso_fujimori_frecuencias <- discurso_fujimori %>%
 
 ### Tabla de frecuencias  
 
-Observando los gráficos podemos ver que el discurso del expresidente Alberto Fujimori trata sobre el desarrollo del país, también habla del congreso y del diñero invertido. Modificando el aspecto, más ancho que alto, seguramente corrijas la mayoría de los problemas con los textos, aún así, tienes algunas leyendas, tal vez demasiado largas, puedes probar achicarlas, o bien agregarles saltos de linea ñp25555555555a cada texto.  
-
-### Resumen  
-
 ```{r kableExtra}
 discurso_fujimori_frecuencias %>% kable() %>% 
   kable_styling(full_width = F) %>% 
@@ -97,6 +105,9 @@ discurso_fujimori_frecuencias %>% kable() %>%
   
 ```  
 
+### Resumen  
+
+Observando los gráficos podemos ver que el discurso del expresidente Alberto Fujimori trata sobre el desarrollo del país, también habla del congreso y del diñero invertido.
 
 ## {.tabset}  
 
@@ -123,7 +134,9 @@ animate(grafico)
 ### Nube de palabras
 
 ```{r nube de palabras}
-discurso_fujimori_frecuencias %>% wordcloud2()
+discurso_fujimori_frecuencias %>% top_n(30, n) %>% 
+  wordcloud2(shape = "circle") -> nube_circle
+nube_circle
 ```  
 
 # ANÁLISIS DE SENTIMIENTO {data-orientation="rows" data-icon="ion-ios-star-half"}  
